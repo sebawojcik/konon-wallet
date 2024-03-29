@@ -1,0 +1,21 @@
+<div class="container">
+    <p>Id:{{expense.id}}</p>
+    <p>Merchant:{{expense.merchant}}</p>
+    <p>Amount:{{expense.amount}}</p>
+    <p>Currency:{{expense.currency}}</p>
+    <p>Date:{{expense.date}}</p>
+    <button type="submit" onclick="redirectToPage('/expenses/edit-expense/{{expense.id}}')">Edit</button>
+    <div id="map" style="height: 500px;"></div>
+</div>
+<script>
+    var map = L.map('map').setView([51.761, -0.488], 16);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+    var marker = L.marker([51.761, -0.488]).addTo(map);
+
+    function redirectToPage(page) {
+        window.location.href = page;
+    }
+</script>

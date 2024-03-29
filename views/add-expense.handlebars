@@ -1,0 +1,23 @@
+<div class="container">
+    <h3 class="mb-3">{{#if isEditing}}Editing Expense #{{expense.id}}{{else}}Creating New Expense{{/if}}</h3>
+    <form action="{{#if isEditing}}/expenses/edit-expense/{{expense.id}}{{else}}/expenses/add-expense{{/if}}"
+        method="POST">
+        <div class="mb-3">
+            <label for="Merchant" class="form-label">Merchant</label>
+            <input type="text" class="form-control" name="merchant" id="Merchant"
+                value="{{#if isEditing}}{{expense.merchant}}{{/if}}">
+        </div>
+        <div class="mb-3">
+            <label for="Amount" class="form-label">Amount</label>
+            <input type="float" class="form-control" name="amount" id="Amount"
+                value="{{#if isEditing}}{{expense.amount}}{{/if}}">
+        </div>
+        <button type="submit" class="btn btn-primary">
+            {{#if isEditing}}
+            Edit
+            {{else}}
+            Create
+            {{/if}}
+        </button>
+    </form>
+</div>
