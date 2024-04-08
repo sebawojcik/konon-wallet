@@ -1,8 +1,5 @@
-const getDatabase = require('../database/database')
 
-const { ObjectId } = require('mongodb')
 const Expense = require("../models/expense")
-const expense = require('../models/expense')
 
 exports.getAddExpense = (req, res, next) => {
     res.render('add-expense', { isEditing: false })
@@ -19,7 +16,9 @@ exports.getEditExpense = async (req, res, next) => {
 }
 
 exports.postAddExpense = async (req, res, next) => {
+
     const expense = new Expense({
+        userId: req.session.user._id,
         merchant: req.body.merchant,
         amount: req.body.amount,
         currency: "£"
@@ -30,6 +29,8 @@ exports.postAddExpense = async (req, res, next) => {
     }).catch(err => {
         console.error(err)
     })
+
+
 }
 
 exports.postEditExpense = async (req, res, next) => {
@@ -59,9 +60,14 @@ exports.getAllExpenses = async (req, res, next) => {
     // const db = await getDatabase()
     // const collection = db.collection("expenses")
     // const allRecords = await collection.find({}).toArray()
-    Expense.find().lean()
+    console.log(req.session.user)
+
+    Expense.find({ userId: req.session.user._id }).lean()
         .then(expenses => {
-            res.render('list-expenses', { expenses, hasExpenses: expenses.length > 0 })
+            res.render('list-expenses', {
+                expenses,
+                hasExpenses: expenses.length > 0,
+            })
         }).catch(err => {
             console.error(err)
         })

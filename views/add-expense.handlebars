@@ -12,6 +12,7 @@
             <input type="float" class="form-control" name="amount" id="Amount"
                 value="{{#if isEditing}}{{expense.amount}}{{/if}}">
         </div>
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <button type="submit" class="btn btn-primary">
             {{#if isEditing}}
             Edit

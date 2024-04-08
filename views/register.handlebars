@@ -1,0 +1,33 @@
+<div class="container">
+    <h3 class="mb-3">Register</h3>
+    {{#if errorMessage}}
+    <div class="alert alert-danger" role="alert">
+        {{errorMessage}}
+    </div>
+    {{/if}}
+    <form action="/auth/register" method="POST">
+        <div class="mb-3">
+            <label for="email" class="form-label">E-mail</label>
+            <input type="email" class="form-control" name="email" id="email">
+
+        </div>
+
+        <div class="mb-3">
+            <label for="fullName" class="form-label">Full Name</label>
+            <input type="text" class="form-control" name="fullName" id="fullName">
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" name="password" id="password">
+        </div>
+        <div class="mb-3">
+            <label for="confirmPassword" class="form-label">Confirm password</label>
+            <input type="password" class="form-control" name="confirmPassword" id="confirmPassword">
+        </div>
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <button type="submit" class="btn btn-primary">
+            Register
+        </button>
+    </form>
+</div>
