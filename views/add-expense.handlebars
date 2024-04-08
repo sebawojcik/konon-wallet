@@ -1,6 +1,6 @@
 <div class="container">
     <h3 class="mb-3">{{#if isEditing}}Editing Expense #{{expense.id}}{{else}}Creating New Expense{{/if}}</h3>
-    <form action="{{#if isEditing}}/expenses/edit-expense/{{expense.id}}{{else}}/expenses/add-expense{{/if}}"
+    <form action="{{#if isEditing}}/expenses/edit-expense/{{expense._id}}{{else}}/expenses/add-expense{{/if}}"
         method="POST">
         <div class="mb-3">
             <label for="Merchant" class="form-label">Merchant</label>

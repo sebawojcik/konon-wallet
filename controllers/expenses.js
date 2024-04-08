@@ -1,42 +1,83 @@
-const expenses = [];
+const getDatabase = require('../database/database')
+
+const { ObjectId } = require('mongodb')
+const Expense = require("../models/expense")
+const expense = require('../models/expense')
 
 exports.getAddExpense = (req, res, next) => {
-    // res.sendFile(path.join(__dirname, '../', 'views', 'add-expense'))
     res.render('add-expense', { isEditing: false })
 }
 
-exports.getEditExpense = (req, res, next) => {
+exports.getEditExpense = async (req, res, next) => {
     const id = req.params.id
-    const expense = expenses.find((e) => e.id == id)
-    res.render('add-expense', { expense, isEditing: true })
+    Expense.findById(id).lean()
+        .then(expense => {
+            res.render('add-expense', { expense, isEditing: true })
+        }).catch(err => {
+            console.error(err)
+        })
 }
 
-exports.postAddExpense = (req, res, next) => {
-    const currentDate = new Date();
-    var formattedDateTime = currentDate.toLocaleString();
-    expenses.push({
+exports.postAddExpense = async (req, res, next) => {
+    const expense = new Expense({
         merchant: req.body.merchant,
         amount: req.body.amount,
-        currency: "£",
-        date: formattedDateTime,
-        id: expenses.length + 1
+        currency: "£"
     })
-    res.redirect('/expenses/all-expenses')
+    expense.save().then(result => {
+        console.log("Created Product")
+        res.redirect('/expenses/all-expenses')
+    }).catch(err => {
+        console.error(err)
+    })
 }
 
-exports.postEditExpense = (req, res, next) => {
+exports.postEditExpense = async (req, res, next) => {
     const id = req.params.id
-    const index = expenses.findIndex(e => e.id == id)
-    expenses[index] = { ...expenses[index], ...req.body }
-    res.redirect('/expenses/all-expenses')
+    Expense.updateOne({ _id: id }, req.body)
+        .then(expense => {
+            res.redirect('/expenses/all-expenses')
+        }).catch(err => {
+            console.error(err)
+        })
+
+
 }
 
-exports.getExpense = (req, res, next) => {
+exports.getExpense = async (req, res, next) => {
     const id = req.params.id
-    const expense = expenses.find((e) => e.id == id)
-    res.render('details-expense', { expense })
+
+    Expense.findById(id).lean()
+        .then(expense => {
+            res.render('details-expense', { expense })
+        }).catch(err => {
+            console.error(err)
+        })
 }
 
-exports.getAllExpenses = (req, res, next) => {
-    res.render('list-expenses', { expenses, hasExpenses: expenses.length > 0 })
+exports.getAllExpenses = async (req, res, next) => {
+    // const db = await getDatabase()
+    // const collection = db.collection("expenses")
+    // const allRecords = await collection.find({}).toArray()
+    Expense.find().lean()
+        .then(expenses => {
+            res.render('list-expenses', { expenses, hasExpenses: expenses.length > 0 })
+        }).catch(err => {
+            console.error(err)
+        })
+}
+
+exports.getDeleteExpense = (req, res, next) => {
+    const id = req.params.id
+    res.render('delete-expense', { id })
+}
+
+exports.postDeleteExpense = async (req, res, next) => {
+    const id = req.params.id
+    Expense.findByIdAndDelete(id)
+        .then(() => {
+            res.json({})
+        }).catch((err) => {
+            console.error(err)
+        })
 }

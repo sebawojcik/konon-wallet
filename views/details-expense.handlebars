@@ -1,10 +1,13 @@
 <div class="container">
-    <p>Id:{{expense.id}}</p>
+    <p>Id:{{expense._id}}</p>
     <p>Merchant:{{expense.merchant}}</p>
     <p>Amount:{{expense.amount}}</p>
     <p>Currency:{{expense.currency}}</p>
-    <p>Date:{{expense.date}}</p>
-    <button type="submit" onclick="redirectToPage('/expenses/edit-expense/{{expense.id}}')">Edit</button>
+    <p>Created at:{{expense.createdAt}}</p>
+    <button type="submit" class="btn btn-primary"
+        onclick="redirectToPage('/expenses/edit-expense/{{expense._id}}')">Edit</button>
+    <button type="submit" class="btn btn-primary"
+        onclick="redirectToPage('/expenses/delete-expense/{{expense._id}}')">Delete</button>
     <div id="map" style="height: 500px;"></div>
 </div>
 <script>

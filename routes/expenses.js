@@ -18,4 +18,8 @@ router.get('/edit-expense/:id', expensesConroller.getEditExpense)
 
 router.post('/edit-expense/:id', expensesConroller.postEditExpense)
 
+router.get('/delete-expense/:id', expensesConroller.getDeleteExpense)
+
+router.delete('/delete-expense/:id', expensesConroller.postDeleteExpense)
+
 module.exports = router;

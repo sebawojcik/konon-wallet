@@ -15,12 +15,12 @@
         <tbody>
             {{#each expenses}}
             <a href="/">
-                <tr style="cursor:pointer;" onclick="redirectToPage('/expenses/all-expenses/{{this.id}}')">
-                    <td>{{this.id}}</td>
+                <tr style="cursor:pointer;" onclick="redirectToPage('/expenses/all-expenses/{{this._id}}')">
+                    <td>{{this._id}}</td>
                     <td>{{this.merchant}}</td>
                     <td>{{this.amount}}</td>
                     <td>{{this.currency}}</td>
-                    <td>{{this.date}}</td>
+                    <td>{{this.createdAt}}</td>
                 </tr>
             </a>
             {{/each}}
