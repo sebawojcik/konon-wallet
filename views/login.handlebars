@@ -19,4 +19,13 @@
             Login
         </button>
     </form>
+    <button class="btn btn-primary mt-2" onclick="redirectToPage('/auth/reset')">
+        Forgot password?
+    </button>
 </div>
+
+<script>
+    function redirectToPage(page) {
+        window.location.href = page;
+    }
+</script>

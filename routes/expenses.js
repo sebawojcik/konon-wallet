@@ -21,6 +21,6 @@ router.post('/edit-expense/:id', isAuth, expensesConroller.postEditExpense)
 
 router.get('/delete-expense/:id', isAuth, expensesConroller.getDeleteExpense)
 
-router.delete('/delete-expense/:id', isAuth, expensesConroller.postDeleteExpense)
+router.post('/delete-expense/:id', isAuth, expensesConroller.postDeleteExpense)
 
 module.exports = router;

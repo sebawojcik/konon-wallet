@@ -4,10 +4,11 @@
     <div class="mb-3">
         <button type="submit" class="btn btn-primary" onclick="redirectToPage('/expenses/all-expenses')">Cancel</button>
     </div>
-
-
     <div>
-        <button type="submit" class="btn btn-primary" onclick="deleteExpense()">Delete</button>
+        <form action="/expenses/delete-expense/{{id}}" method="POST">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
+            <button type="submit" class="btn btn-primary" onclick="deleteExpense()">Delete</button>
+        </form>
     </div>
 </div>
 
@@ -15,22 +16,5 @@
 <script>
     function redirectToPage(page) {
         window.location.href = page;
-    }
-    function deleteExpense() {
-        const options = {
-            method: 'DELETE'
-        };
-
-        // Make the DELETE request
-        fetch("/expenses/delete-expense/{{id}}", options)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                redirectToPage('/expenses/all-expenses')
-            })
-            .catch(error => {
-                console.error('There was a problem deleting the data:', error);
-            });
     }
 </script>

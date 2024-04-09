@@ -35,10 +35,20 @@ exports.postAddExpense = async (req, res, next) => {
 
 exports.postEditExpense = async (req, res, next) => {
     const id = req.params.id
-    Expense.updateOne({ _id: id }, req.body)
+    const merchant = req.body.merchant
+    const amount = req.body.amount
+    Expense.findById(id)
         .then(expense => {
-            res.redirect('/expenses/all-expenses')
-        }).catch(err => {
+            if (expense.id.toString() !== req.user._id.toString()) {
+                return res.redirect('/')
+            }
+            expense.merchant = merchant
+            expense.amount = amount
+            return expense.save().then(result => {
+                res.redirect('/expenses/all-expenses')
+            })
+        })
+        .catch(err => {
             console.error(err)
         })
 
@@ -80,9 +90,9 @@ exports.getDeleteExpense = (req, res, next) => {
 
 exports.postDeleteExpense = async (req, res, next) => {
     const id = req.params.id
-    Expense.findByIdAndDelete(id)
+    Expense.deleteOne({ _id: id, userId: req.user._id })
         .then(() => {
-            res.json({})
+            res.redirect('/expenses/all-expenses')
         }).catch((err) => {
             console.error(err)
         })

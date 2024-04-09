@@ -9,6 +9,7 @@ const session = require('express-session')
 const MongoDBStore = require("connect-mongodb-session")(session)
 
 
+
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -49,7 +50,7 @@ app.use('/auth', authRoutes)
 
 app.get('/', (req, res, next) => {
     console.log(req.session)
-    res.render('home', { user: req.session.user })
+    res.render('home', { user: req.session.user, successMessage: req.flash('success') })
 });
 // app.use((req, res, next) => {
 //     // res.redirect('https://http.cat/images/404.jpg')

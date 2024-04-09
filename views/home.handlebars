@@ -1,4 +1,9 @@
 <div class="container">
+    {{#if successMessage}}
+    <div class="alert alert-success" role="alert">
+        {{successMessage}}
+    </div>
+    {{/if}}
     <h1 class="text-center mb-5">Hello {{user.fullName}}</h1>
     <p class="text-center">Welcome to ExpenseWise, your all-in-one solution for effortless financial expense management.
         With ExpenseWise,
