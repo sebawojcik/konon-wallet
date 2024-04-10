@@ -1,53 +1,66 @@
 const axios = require('axios');
-const Currency = require("./models/currency")
-const mongoose = require('mongoose')
+const Currency = require("./models/currency");
+const mongoose = require('mongoose');
 require('dotenv').config();
+
+// Retrieve MongoDB URI from environment variables
 const mongodbURI = process.env.MONGODB_URI;
 
+// Function to fetch currencies data from API
 const getCurrencies = async () => {
-    return await axios.get("https://restcountries.com/v3.1/all")
-    .then(response => {
-        const countries = response.data
-        const currencies = {}
-
-        countries.forEach(element => {
-            if (element.currencies) {
-                Object.entries(element.currencies).forEach(([code, obj]) => {
+    try {
+        // Fetch data from API
+        const response = await axios.get("https://restcountries.com/v3.1/all");
+        const countries = response.data;
+        
+        // Extract unique currencies
+        const currencies = {};
+        countries.forEach(country => {
+            if (country.currencies) {
+                Object.entries(country.currencies).forEach(([code, obj]) => {
                     if (!(code in currencies)) {
-                        currencies[code] = obj
+                        currencies[code] = obj;
                     }
-                })
+                });
             }
         });
 
-        const currenciesArray = []
-
-        Object.entries(currencies).forEach(([code, obj]) => {
-            currenciesArray.push({...obj, code})
-        })
-
+        // Convert currencies object to array and sort by name
+        const currenciesArray = Object.entries(currencies).map(([code, obj]) => ({ ...obj, code }));
         currenciesArray.sort((a, b) => a.name.localeCompare(b.name));
-        return currenciesArray
-    })
-    .catch(error => {
+        
+        return currenciesArray;
+    } catch (error) {
         console.error('Error fetching data:', error);
-    });
+        throw error; // Re-throw the error for higher level handling
+    }
+};
 
+// Function to populate currencies data in MongoDB
+async function populateCurrencies() {
+    try {
+        // Connect to MongoDB
+        await mongoose.connect(mongodbURI);
+        
+        // Fetch currencies data
+        const currenciesData = await getCurrencies();
+        
+        // Loop through currencies data and upsert into MongoDB
+        for (const currencyData of currenciesData) {
+            await Currency.findOneAndUpdate(
+                { code: currencyData.code }, // Find currency by code
+                currencyData, // Data to update or insert
+                { upsert: true } // Upsert option: insert if not found, update if found
+            );
+            console.log(`Currency (${currencyData.code} - ${currencyData.name}) added or updated successfully.`);
+        }
+    } catch (error) {
+        console.error('Error populating currencies:', error);
+    } finally {
+        // Close the MongoDB connection when done
+        await mongoose.disconnect();
+    }
 }
 
-mongoose.connect(mongodbURI)
-.then(async () => {
-    const currencies = await getCurrencies()
-    Currency.insertMany(currencies)
-    .then(() => {
-        console.log('Data inserted successfully');
-    })
-    .catch(err => {
-        console.error('Error inserting data:', err);
-    })
-    .finally(() => {
-        mongoose.disconnect();
-    });
-}).catch(err => {
-    console.error(err)
-})
+// Invoke the function to populate currencies
+populateCurrencies();
