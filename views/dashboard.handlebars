@@ -1,0 +1,73 @@
+<div class="container">
+    <h2 class="mb-3">Spending Categories</h2>
+    <canvas id="categoriesChart" class="mb-5"></canvas>
+    <h2 class="mb-3">Monthly Spendings</h2>
+    <canvas id="datesChart" class="mb-5"></canvas>
+    <h2 class="mb-3">Transactions Locations</h2>
+    <div id="map" style="height: 500px;" class="mb-5"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const categoriesChart = document.getElementById('categoriesChart');
+    new Chart(categoriesChart, {
+        type: 'bar',
+        data: {
+            labels: {{{ json categoriesChart.categoryNames }}},
+        datasets: [{
+            label: '{{currency.code}}',
+            data: {{{ json categoriesChart.sums }}},
+        backgroundColor: {{{ json categoriesChart.opacityColors }}},
+        borderColor: {{{ json categoriesChart.solidColors }}},
+        borderWidth: 1
+            }]
+        },
+        options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        },
+        plugins: {
+            legend: {
+                display: false // Hide the legend
+            }
+        }
+    }
+    });
+
+    const data = {
+        labels: {{{ json datesChart.labels }}},
+        datasets: [{
+        label: '{{currency.code}}',
+        data: {{{ json datesChart.data }}},
+        fill: false,
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1
+        }]
+    };
+
+    const datesChart = document.getElementById('datesChart');
+    new Chart(datesChart, {
+        type: 'line',
+        data: data,
+        options:{
+            plugins: {
+                legend: {
+                    display: false // Hide the legend
+                }
+            }
+        }
+    });
+
+    var map = L.map('map').setView([51.761, -0.488], 7);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    const expenses = {{{ json expenses }}}
+    expenses.forEach(e => {
+        const marker = L.marker([e.latitude, e.longitude]).addTo(map);
+    })
+</script>

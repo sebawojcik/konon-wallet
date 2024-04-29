@@ -1,13 +1,15 @@
 <div class="container">
     {{#if hasExpenses }}
-    <p>All Expenses</p>
+    <h3>All Expenses</h3>
+    <p>Download your expenses in .csv format</p>
+    <button type="submit" class="btn btn-primary mb-3" onclick="redirectToPage('/expenses/download-expenses-csv')">Download</button>
     <table class="table table-hover">
         <thead>
             <tr>
-                <th scope="col">ID</th>
                 <th scope="col">Merchant</th>
                 <th scope="col">Amount</th>
                 <th scope="col">Currency</th>
+                <th scope="col">Category</th>
                 <th scope="col">Date/Time</th>
 
             </tr>
@@ -16,10 +18,10 @@
             {{#each expenses}}
             <a href="/">
                 <tr style="cursor:pointer;" onclick="redirectToPage('/expenses/all-expenses/{{this._id}}')">
-                    <td>{{this._id}}</td>
                     <td>{{this.merchant}}</td>
                     <td>{{this.amount}}</td>
-                    <td>{{this.currency}}</td>
+                    <td>{{this.userId.currency.code}}</td>
+                    <td>{{this.category.name}}</td>
                     <td>{{this.createdAt}}</td>
                 </tr>
             </a>

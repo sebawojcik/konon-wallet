@@ -19,6 +19,11 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    currency: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Currency",
+        required: true,
+    },
     resetToken: String,
     resetTokenExpiration: Date,
 }, { timestamps: true });

@@ -5,25 +5,35 @@
         {{errorMessage}}
     </div>
     {{/if}}
-    <form action="/auth/register" method="POST">
+    <form action="/auth/register" method="POST" novalidate>
         <div class="mb-3">
             <label for="email" class="form-label">E-mail</label>
-            <input type="email" class="form-control" name="email" id="email">
+            <input type="email" class="form-control" name="email" id="email" value="{{oldInput.email}}">
 
         </div>
 
         <div class="mb-3">
             <label for="fullName" class="form-label">Full Name</label>
-            <input type="text" class="form-control" name="fullName" id="fullName">
+            <input type="text" class="form-control" name="fullName" id="fullName" value="{{oldInput.fullName}}">
+        </div>
+
+        <div class="mb-3">
+            <label for="Currency" class="form-label">Currency</label>
+            <select id="Currency" class="form-select" aria-label="Default select example" name="currency">
+                {{#each currencies}}
+                <option value="{{this._id}}">{{this.code}} - {{this.name}}</option>
+                {{/each}}
+            </select>
         </div>
 
         <div class="mb-3">
             <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" name="password" id="password">
+            <input type="password" class="form-control" name="password" id="password" value="{{oldInput.password}}">
         </div>
         <div class="mb-3">
             <label for="confirmPassword" class="form-label">Confirm password</label>
-            <input type="password" class="form-control" name="confirmPassword" id="confirmPassword">
+            <input type="password" class="form-control" name="confirmPassword" id="confirmPassword"
+                value="{{oldInput.confirmPassword}}">
         </div>
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <button type="submit" class="btn btn-primary">

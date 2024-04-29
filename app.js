@@ -27,7 +27,14 @@ const store = new MongoDBStore({
 const csrfProtection = csrf()
 const flash = require('connect-flash')
 
-app.engine('handlebars', expressHBS({ defaultLayout: 'base' }));
+app.engine('handlebars', expressHBS({
+    defaultLayout: 'base',
+    helpers: {
+        json: function (context) {
+            return JSON.stringify(context)
+        }
+    }
+}));
 app.set('view engine', 'handlebars');
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -49,7 +56,6 @@ app.use('/expenses', expensesRoutes);
 app.use('/auth', authRoutes)
 
 app.get('/', (req, res, next) => {
-    console.log(req.session)
     res.render('home', { user: req.session.user, successMessage: req.flash('success') })
 });
 // app.use((req, res, next) => {

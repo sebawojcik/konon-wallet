@@ -3,8 +3,11 @@ const bcrypt = require('bcryptjs')
 const nodemailer = require('nodemailer')
 const crypto = require('crypto')
 require('dotenv').config();
+const { validationResult } = require('express-validator')
 const GMAIL_USER = process.env.GMAIL_USER;
 const GMAIL_PASS = process.env.GMAIL_PASS;
+const expenseCurrency = require("../models/currency")
+
 
 const transporter = nodemailer.createTransport({
     service: "Gmail",
@@ -19,7 +22,7 @@ const transporter = nodemailer.createTransport({
 
 
 exports.getLogin = (req, res, next) => {
-    res.render('login', { errorMessage: req.flash('error') })
+    res.render('login', { errorMessage: req.flash('error'), oldInput: { email: '', password: '' } })
 }
 
 
@@ -30,8 +33,13 @@ exports.postLogin = (req, res, next) => {
     User.findOne({ email })
         .then(user => {
             if (!user) {
-                req.flash('error', 'Invalid email or password.')
-                return res.redirect('/auth/login')
+                // req.flash('error', 'Invalid email or password.')
+                return res.status(422).render('login',
+                    {
+                        oldInput: { email, password },
+                        errorMessage: 'Invalid email or password.',
+                    },
+                )
             }
             bcrypt.compare(password, user.password)
                 .then(doMatch => {
@@ -43,10 +51,15 @@ exports.postLogin = (req, res, next) => {
                             res.redirect('/')
                         })
                     }
-                    res.redirect('/auth/login')
+                    return res.status(422).render('login',
+                        {
+                            oldInput: { email, password },
+                            errorMessage: 'Invalid email or password.',
+                        },
+                    )
                 })
                 .catch(err => {
-                    console.log(err)
+                    console.error(err)
                     res.redirect('/auth/login')
                 })
         })
@@ -55,13 +68,18 @@ exports.postLogin = (req, res, next) => {
 
 exports.postLogout = (req, res, next) => {
     req.session.destroy((err) => {
-        console.log(err)
         res.redirect('/')
     })
 }
 
 exports.getRegister = (req, res, next) => {
-    res.render('register', { errorMessage: req.flash('error') })
+    expenseCurrency.find().lean()
+        .then(currencies => {
+            console.log(req.flash('error'))
+            res.render('register', { isEditing: false, currencies, oldInput: { email: '', fullName: '', password: '', confirmPassword: '' } })
+        }).catch(err => {
+            console.error(err)
+        })
 }
 
 exports.postRegister = (req, res, next) => {
@@ -69,38 +87,46 @@ exports.postRegister = (req, res, next) => {
     const password = req.body.password
     const confirmPassword = req.body.confirmPassword
     const fullName = req.body.fullName
-
+    const currency = req.body.currency
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        console.log(errors.array())
+        return expenseCurrency.find().lean()
+            .then(currencies => {
+                return res.status(422).render('register', {
+                    isEditing: false,
+                    currencies,
+                    errorMessage: errors.array()[0].msg,
+                    oldInput: { email, fullName, password, confirmPassword }
+                })
+            }).catch(err => {
+                console.error(err)
+            })
+    }
     if (password !== confirmPassword) {
         req.flash('error', 'Passwords do not match')
         return res.redirect('/auth/register')
     }
 
-    User.findOne({ email })
-        .then(userData => {
-            if (userData) {
-                req.flash('error', 'E-Mail already exists.')
-                return res.redirect('/auth/register')
-            }
-            return bcrypt.hash(password, 12)
-                .then(hashedPassword => {
-                    const user = new User({
-                        email,
-                        password: hashedPassword,
-                        fullName,
-                        currency: "GBP"
-                    })
-                    return user.save()
-                })
-                .then(result => {
-                    const mailOptions = {
-                        from: "kononwallet.donotreply@gmail.com",
-                        to: email,
-                        subject: "Hello " + fullName + "!",
-                        html: "<h1>Welcome to Konon Wallet!</h1>",
-                    };
-                    transporter.sendMail(mailOptions);
-                    res.redirect('/auth/login')
-                })
+    bcrypt.hash(password, 12)
+        .then(hashedPassword => {
+            const user = new User({
+                email,
+                password: hashedPassword,
+                fullName,
+                currency
+            })
+            return user.save()
+        })
+        .then(result => {
+            const mailOptions = {
+                from: "kononwallet.donotreply@gmail.com",
+                to: email,
+                subject: "Hello " + fullName + "!",
+                html: "<h1>Welcome to Konon Wallet!</h1>",
+            };
+            transporter.sendMail(mailOptions);
+            res.redirect('/auth/login')
         })
         .catch(err => {
             console.error(err)
