@@ -1,7 +1,3 @@
-Certainly! Below is an example template for a README file tailored to your Node.js application. This README file will include instructions on configuring the `.env` file.
-
----
-
 # Konon Wallet
 
 Brief description or introduction of your Node.js application.

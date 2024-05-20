@@ -4,11 +4,11 @@
     <p>Amount:{{expense.amount}}</p>
     <p>Currency:{{expense.currency}}</p>
     <p>Created at:{{expense.createdAt}}</p>
-    <button type="submit" class="btn btn-primary"
+    <button type="submit" class="btn btn-primary mb-3"
         onclick="redirectToPage('/expenses/edit-expense/{{expense._id}}')">Edit</button>
-    <button type="submit" class="btn btn-primary"
+    <button type="submit" class="btn btn-primary mb-3"
         onclick="redirectToPage('/expenses/delete-expense/{{expense._id}}')">Delete</button>
-    <div id="map" style="height: 500px;"></div>
+    <div id="map" style="height: 500px;" class="mb-5"></div>
 </div>
 <script>
     const lat = {{ expense.latitude }}
